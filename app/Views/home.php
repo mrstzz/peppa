@@ -67,28 +67,75 @@ print_r($_SESSION);
 </div>
 
 <div class="container my-5">
-    <h2 class="text-center fw-bold mb-4">Produtos e Serviços</h2>
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4 text-center">
+   <h2 class="text-center fw-bold mb-4">Produtos e Serviços</h2>
+    <?php 
+    // Array de serviços.
+    $servicos = [
+        'Supermercado', 'Drogarias', 'Investimentos', 'Seguros', 
+        'Consórcios', 'Outros', 'Serviço 7', 'Serviço 8', 'Serviço 9'
+    ];
+
+    // Define quantos itens 
+    $itemsPerSlide = 3;
+
+    // Divide o array principal em "slides"
+    $slides = array_chunk($servicos, $itemsPerSlide);
+    ?>
+
+    <div id="servicosCarousel" class="carousel slide carousel-dark" data-bs-ride="carousel">
         
-        <?php 
-        $servicos = ['Supermercado', 'Drogarias', 'Investimentos', 'Seguros', 'Consórcios', 'Outros'];
-        foreach ($servicos as $servico): 
-        ?>
-        <div class="col">
-            <div class="card service-card card-categoria-trigger" 
-                 data-bs-toggle="modal" 
-                 data-bs-target="#modalCategoria" 
-                 data-categoria="<?= htmlspecialchars($servico) ?>"
-                 style="cursor: pointer;">
-
-                <img src="https://placehold.co/400x300/E9752F/white?text=<?= urlencode($servico) ?>" alt="Ícone do serviço <?= $servico ?>">
-                <div class="card-title-overlay">
-                    <p class="mb-0"><?= $servico ?></p>
-                </div>
-            </div>
+        <div class="carousel-indicators">
+            <?php foreach ($slides as $index => $slide): ?>
+                <button type="button" 
+                        data-bs-target="#servicosCarousel" 
+                        data-bs-slide-to="<?= $index ?>" 
+                        class="<?= $index == 0 ? 'active' : '' ?>" 
+                        aria-current="<?= $index == 0 ? 'true' : 'false' ?>" 
+                        aria-label="Slide <?= $index + 1 ?>">
+                </button>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
 
+        <div class="carousel-inner">
+            
+            <?php foreach ($slides as $index => $slideItems): ?>
+                
+                <div class="carousel-item <?= $index == 0 ? 'active' : '' ?>">
+                    
+                    <div class="row g-4 justify-content-center">
+                        
+                        <?php foreach ($slideItems as $servico): ?>
+                            
+                            <div class="col-12 col-md-6 col-lg-3">
+                                
+                                <div class="card service-card card-categoria-trigger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalCategoria" 
+                                    data-categoria="<?= htmlspecialchars($servico) ?>"
+                                    style="cursor: pointer;">
+
+                                    <img src="https://placehold.co/400x300/f03325/white?text=<?= urlencode($servico) ?>" alt="Ícone do serviço <?= $servico ?>">
+                                    <div class="card-title-overlay">
+                                        <p class="mb-0"><?= $servico ?></p>
+                                    </div>
+                                </div>
+                                </div>
+                        <?php endforeach; ?>
+
+                    </div>
+                </div>
+            <?php endforeach; ?>
+
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#servicosCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#servicosCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Próximo</span>
+        </button>
     </div>
 
     <div class="modal fade" id="modalCategoria" tabindex="-1" aria-labelledby="modalCategoriaLabel" aria-hidden="true">
@@ -126,6 +173,9 @@ print_r($_SESSION);
             Fale Conosco
         </a>
     </div>
+    
+
+    
 
     <div class="modal fade" id="modalContato" tabindex="-1" aria-labelledby="modalContatoLabel" aria-hidden="true">
         <div class="modal-dialog">
