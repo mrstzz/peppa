@@ -1,0 +1,15 @@
+# public/.htaccess
+# Redireciona todas as requisições que não são para arquivos ou diretórios existentes
+# para o nosso front controller (index.php).
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Se a requisição não for para um arquivo existente...
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # E se a requisição não for para um diretório existente...
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # ...redirecione para index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

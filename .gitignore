@@ -1,0 +1,20 @@
+.env
+
+# Arquivos de log
+*.log
+logs/
+
+# Arquivos temporários e de cache
+tmp/
+cache/
+
+# Dependências do Composer
+vendor/
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de IDEs
+.idea/
+.vscode/
