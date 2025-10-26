@@ -3,7 +3,6 @@
 
 namespace App\Controllers;
 
-// --- CORREÇÃO AQUI: Usando o SDK V3 moderno ---
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\Exceptions\MPApiException;
@@ -27,7 +26,7 @@ class PagamentoController extends Controller {
         $plano = $_POST['plano'];
         $valor = (float)$_POST['valor'];
         $comercId = $_SESSION['user_id'];
-        $comercInfo = $this->comercianteModel->findById($comercId);
+        $comercInfo = $this->comercianteModel->buscaId($comercId);
 
         try {
             // Cria um cliente de pagamento
@@ -49,7 +48,7 @@ class PagamentoController extends Controller {
             $payment = $client->create($request);
 
             if ($payment->id) {
-                $this->pagamentoModel->createPixPayment(
+                $this->pagamentoModel->inserePixPayment(
                     $comercId, $plano, $valor, $payment->id,
                     $payment->point_of_interaction->transaction_data->qr_code_base64,
                     $payment->point_of_interaction->transaction_data->qr_code
@@ -88,11 +87,11 @@ class PagamentoController extends Controller {
                 $payment = $client->get($paymentId);
 
                 if ($payment && $payment->status == 'approved') {
-                    $pagamentoInterno = $this->pagamentoModel->findByMpId($paymentId);
+                    $pagamentoInterno = $this->pagamentoModel->buscaMpId($paymentId);
 
                     if ($pagamentoInterno && $pagamentoInterno['status_pagamento'] !== 'aprovado') {
                         $this->pagamentoModel->updateStatus($paymentId, 'aprovado');
-                        $this->comercianteModel->activatePlan(
+                        $this->comercianteModel->ativaPlano(
                             $pagamentoInterno['comerc_id'],
                             $pagamentoInterno['plano_selecionado']
                         );

@@ -69,6 +69,15 @@ ob_start();
                                 Caso não envie seu catálogo, gentileza deixar o telefone para contato.
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label for="nomeEmpresa" class="form-label">Nome da Empresa</label>
+                            <input type="text" class="form-control form-control-lg" id="nomeEmpresa" name="nomeEmpresa" placeholder="ex: Atacadista LTDA" value="<?= htmlspecialchars($old_input['nomeEmpresa'] ?? '') ?>" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="site" class="form-label">Site</label>
+                            <input type="text" class="form-control form-control-lg" id="site" name="site" placeholder="ex: atacadista.com.br" value="<?= htmlspecialchars($old_input['site'] ?? '') ?>" required>
+                        </div>
                         <?php endif; ?>
 
                         <div class="mb-3">

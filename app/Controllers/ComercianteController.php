@@ -30,7 +30,7 @@ class ComercianteController extends Controller {
     }
 
     public function dashboard() {
-        $comerc = $this->comercianteModel->findById($_SESSION['user_id']);
+        $comerc = $this->comercianteModel->buscaId($_SESSION['user_id']);
 
         // Se o status for provisório e não tiver plano, redireciona para os planos
         if ($comerc['status'] === 'ativo' && is_null($comerc['plano'])) {
@@ -77,7 +77,7 @@ class ComercianteController extends Controller {
                 if ($file['error'] == UPLOAD_ERR_OK) {
                     $newFilename = $uploader->upload($file);
                     if ($newFilename) {
-                        $this->comercianteModel->addPhoto($comercID, $newFilename, 'galeria');
+                        $this->comercianteModel->insereFoto($comercID, $newFilename, 'galeria');
                     }
                 }
             }
@@ -90,7 +90,7 @@ class ComercianteController extends Controller {
         $comercID = $_SESSION['user_id'];
         
         // Deleta do disco e do banco
-        $this->comercianteModel->deletePhoto($midiaId, $comercID);
+        $this->comercianteModel->excluiFoto($midiaId, $comercID);
         
         $this->redirect('/galeria/gerenciar');
     }

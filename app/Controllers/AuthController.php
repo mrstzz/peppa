@@ -30,18 +30,19 @@ class AuthController extends Controller {
         $password = $_POST['password'] ?? '';
         
         // 1. Tenta encontrar como cliente
-        $user = $this->userModel->findByEmailExists($email);
+        $user = $this->userModel->procuraEmailExistente($email);
         if ($user && password_verify($password, $user['senha'])) {
             // É um cliente, loga normalmente
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_type'] = 'cliente'; // Guarda o tipo na sessão
-            $_SESSION['user_name'] = $user['nome'];
+            $_SESSION['user_nome'] = $user['nome'];
+            $_SESSION['user_nome'] = $user['nome'];
             $this->redirect('/dashboard');
             return;
         }
 
         // 2. Se não for cliente, tenta encontrar como comerciantes
-        $comerc = $this->comercianteModel->findEmailExists($email);
+        $comerc = $this->comercianteModel->procuraEmailExistente($email);
         if ($comerc && password_verify($password, $comerc['senha'])) {
             // É uma comercanhante, verifica o status
             if ($comerc['status'] === 'provisorio') {
@@ -49,11 +50,11 @@ class AuthController extends Controller {
                 $this->redirect('/login');
                 return;
             }
-            // (Adicione aqui a lógica para status 'suspenso')
 
             $_SESSION['user_id'] = $comerc['id'];
             $_SESSION['user_type'] = 'comerciante'; // Guarda o tipo na sessão
-            $_SESSION['user_name'] = $comerc['nome'];
+            $_SESSION['user_nome'] = $comerc['nome'];
+            $_SESSION['user_email'] = $comerc['email'];
             $this->redirect('/dashboard-comerciante'); // Redireciona para um dashboard diferente
             return;
         }
@@ -70,7 +71,9 @@ class AuthController extends Controller {
     public function register() {
         $type = $_GET['type'] ?? 'usuario';
 
-        $name = $_POST['name'] ?? '';
+        $nome = $_POST['nome'] ?? '';
+        $nomeEmpresa = $_POST['nomeEmpresa'] ?? '';
+        $site = $_POST['site'] ?? '';
         $email = $_POST['email'] ?? '';
         $telefone = $_POST['telefone'] ?? '';
         $cpf = $_POST['cpf'] ?? '';
@@ -85,7 +88,7 @@ class AuthController extends Controller {
         $_SESSION['old_input'] = $old_input;
 
 
-        if (empty($name) || empty($email) || empty($password) || empty($telefone) || empty($cpf)) {
+        if (empty($nome) || empty($email) || empty($password) || empty($telefone) || empty($cpf)) {
             $_SESSION['error'] = 'Todos os campos são obrigatórios.';
             $this->redirect('/register');
             return;
@@ -98,21 +101,21 @@ class AuthController extends Controller {
             return;
         }
         
-        if ($this->userModel->findByEmail($email)) {
+        if ($this->userModel->procuraEmail($email)) {
             $_SESSION['error'] = 'Este email já está cadastrado.';
             $redirect_url = ($type === 'comerciante') ? '/register?type=comerciante' : '/register?type=usuario';
             $this->redirect($redirect_url);
             return;
         }
 
-        if ($this->userModel->findByCpf($cpf)) {
+        if ($this->userModel->buscaCpf($cpf)) {
             $_SESSION['error'] = 'Este CPF já está cadastrado.';
             $redirect_url = ($type === 'comerciante') ? '/register?type=comerciante' : '/register?type=usuario';
             $this->redirect($redirect_url);
             return;
         }
         
-        if ($this->userModel->findByCell($telefone)) {
+        if ($this->userModel->buscaTelefone($telefone)) {
             $_SESSION['error'] = 'Este telefone já está cadastrado.';
             $redirect_url = ($type === 'comerciante') ? '/register?type=comerciante' : '/register?type=usuario';
             $this->redirect($redirect_url);
@@ -141,10 +144,10 @@ class AuthController extends Controller {
         $success = false;
         if ($type === 'comerciante') {
             // Chama o Model de Comerciante
-            $success = $this->comercianteModel->createComerciante($name, $email, $password, $telefone, $cpf);
+            $success = $this->comercianteModel->insere($nome, $nomeEmpresa, $site, $email, $password, $telefone, $cpf);
         } else {
             // Chama o Model de Usuário (Cliente)
-            $success = $this->userModel->create($name, $email, $password, $telefone, $cpf);
+            $success = $this->userModel->insere($nome, $email, $password, $telefone, $cpf);
         }
 
         if ($success) {
@@ -155,10 +158,10 @@ class AuthController extends Controller {
                 // O input `catalogo[]` envia os arquivos num formato diferente, precisamos reorganizar
                 $files = $this->reArrayFiles($_FILES['catalogo']);
                 foreach ($files as $file) {
-                    $newFilename = $uploader->upload($file);
-                    if ($newFilename) {
+                    $newFilenome = $uploader->upload($file);
+                    if ($newFilenome) {
                         // Se o upload deu certo, salva o nome do arquivo no banco
-                        $this->comercianteModel->addPhoto($success, $newFilename);
+                        $this->comercianteModel->insereFoto($success, $newFilenome);
                     }
                 }
             }
@@ -176,7 +179,7 @@ class AuthController extends Controller {
 
     private function reArrayFiles(&$file_post) {
         $file_ary = array();
-        $file_count = count($file_post['name']);
+        $file_count = count($file_post['nome']);
         $file_keys = array_keys($file_post);
 
         for ($i=0; $i<$file_count; $i++) {
@@ -189,13 +192,13 @@ class AuthController extends Controller {
 
     public function dashboard() {
         $this->authCheck();
-        $user = $this->userModel->findById($_SESSION['user_id']);
+        $user = $this->userModel->buscaId($_SESSION['user_id']);
         $this->view('dashboard', ['user' => $user]);
     }
 
     public function dashboardComerc() {
         $this->authCheck();
-        $comerc = $this->comercianteModel->findById($_SESSION['user_id']);
+        $comerc = $this->comercianteModel->buscaId($_SESSION['user_id']);
         $this->view('dashboardComerciante', ['comerc' => $comerc]);
     }
    
