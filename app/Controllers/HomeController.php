@@ -25,14 +25,14 @@ class HomeController extends Controller {
     }
 
     public function listaComerciantes() {
-        $comerciantes = $this->comercianteModel->getAllActive();
+        $comerciantes = $this->comercianteModel->getTodosAtivos();
         $this->view('listaComerciante', ['comerciantes' => $comerciantes]);
     }
 
     
     
     public function verPerfil($id) {
-        $data = $this->comercianteModel->getPublicProfile($id);
+        $data = $this->comercianteModel->getPerfilAtivo($id);
 
         if (!$data) {
             // Redireciona para a home se o perfil não for encontrado ou não estiver ativo

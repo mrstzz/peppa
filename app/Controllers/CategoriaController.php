@@ -27,28 +27,22 @@ class CategoriaController extends Controller {
             
             // --- CASO ESPECÍFICO: SUPERMERCADO ---
             case 'Supermercado':
-                // 1. Define a view específica
+
                 $viewParaRenderizar = 'partials/_supermercado_detalhes';
-                
-                // 2. Busca os dados específicos (simulados)
                 $dados = $this->getDadosSupermercado($categoriaNome);
                 break;
 
             // --- CASO GENÉRICO (para todas as outras) ---
             default:
-                // 1. Define a view genérica
                 $viewParaRenderizar = 'partials/_categoria_detalhes';
-                
-                // 2. Busca os dados genéricos
                 $dados = $this->getDadosGenericos($categoriaNome);
                 break;
         }
 
-        // 3. Renderiza a view parcial escolhida com os dados buscados
+        // Renderiza a view parcial escolhida com os dados buscados
         $this->renderPartial($viewParaRenderizar, $dados);
     }
 
-    // --- Métodos de busca de dados ---
 
     /**
      * Busca dados específicos para a view de Supermercado

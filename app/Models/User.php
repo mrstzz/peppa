@@ -12,14 +12,14 @@ class User {
         $this->pdo = $pdo;
     }
     
-    public function findById($id) {
+    public function buscaId($id) {
 
         $stmt = $this->pdo->prepare('SELECT id, nome, email, telefone, criado_em FROM users WHERE id = ?');
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
 
-    public function findByCPF($cpf) {
+    public function buscaCpf($cpf) {
             $cpf = preg_replace('/\D/', '', $cpf);
             $stmt = $this->pdo->prepare('SELECT 1
                                     FROM 
@@ -31,7 +31,7 @@ class User {
             $stmt->execute([$cpf,$cpf]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function findByEmail($email) {
+    public function procuraEmail($email) {
 
         $stmt = $this->pdo->prepare ('SELECT 1
                                     FROM 
@@ -44,7 +44,7 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function findByEmailExists($email) {
+    public function procuraEmailExistente($email) {
 
             $stmt = $this->pdo->prepare ('SELECT * FROM users WHERE email = ?');
             $stmt->execute([$email]);
@@ -54,7 +54,7 @@ class User {
 
 
 
-    public function findByCell($telefone) {
+    public function buscaTelefone($telefone) {
         $telefone = ltrim ($telefone,'0');
         $stmt = $this->pdo->prepare('SELECT 1
                                     FROM 
@@ -137,7 +137,7 @@ class User {
     }
 
 
-     public function create($name, $email, $password, $telefone, $cpf, $type = 'usuario') {
+     public function insere($name, $email, $password, $telefone, $cpf, $type = 'usuario') {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $cpf = preg_replace('/\D/', '', $cpf);
         $telefone = ltrim ($telefone,'0');
