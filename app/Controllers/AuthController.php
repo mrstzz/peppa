@@ -70,7 +70,6 @@ class AuthController extends Controller {
 
     public function register() {
         $type = $_GET['type'] ?? 'usuario';
-
         $nome = $_POST['nome'] ?? '';
         $nomeEmpresa = $_POST['nomeEmpresa'] ?? '';
         $site = $_POST['site'] ?? '';
@@ -179,7 +178,7 @@ class AuthController extends Controller {
 
     private function reArrayFiles(&$file_post) {
         $file_ary = array();
-        $file_count = count($file_post['nome']);
+        $file_count = count($file_post['name']);
         $file_keys = array_keys($file_post);
 
         for ($i=0; $i<$file_count; $i++) {
