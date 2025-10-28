@@ -89,7 +89,6 @@ class AuthController extends Controller {
 
         if (empty($nome) || empty($email) || empty($password) || empty($telefone) || empty($cpf)) {
             $_SESSION['error'] = 'Todos os campos são obrigatórios.';
-            pr($_POST);die;
             $this->redirect('/register');
             return;
         }
