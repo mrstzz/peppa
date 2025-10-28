@@ -4,7 +4,6 @@
 $title = 'Página Inicial';
 
 ob_start();
-print_r($_SESSION);
 ?>
 
 <style>

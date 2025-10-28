@@ -3,13 +3,15 @@
 
 namespace App\Models;
 
+use Database;
 use PDO;
 
-class Comerciante {
+class Comerciante extends Database{
     protected $pdo;
 
     public function __construct(PDO $pdo) {
         $this->pdo = $pdo;
+        $this->conn = $pdo;
     }
 
       /**
@@ -18,7 +20,7 @@ class Comerciante {
      * @return mixed
      */
     public function buscaId($id) {
-        // CORREÇÃO: Adicionamos um LEFT JOIN para a tabela de fotos, buscando a de tipo 'perfil'
+
         $sql = "SELECT 
                     a.id, a.nome, a.status, a.plano, a.plano_expira_em,
                     p.titulo_perfil, p.descricao_perfil,
@@ -27,29 +29,28 @@ class Comerciante {
                 LEFT JOIN perfil_comerciantes p ON a.id = p.comerc_id
                 LEFT JOIN comerciante_fotos f ON a.id = f.comerc_id AND f.tipo = 'perfil'
                 WHERE a.id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id]);
-        return $stmt->fetch();
+        $result = $this->consulta($sql,[$id]);
+        return $result->fetch();
     }
 
 
     public function procuraEmail($email) {
 
-        $stmt = $this->pdo->prepare('SELECT 1
-                                    FROM 
-                                        dual
-                                    WHERE EXISTS 
-                                        (SELECT 1 FROM users WHERE email = ?) OR EXISTS 
-                                        (SELECT 1 FROM comerciantes WHERE email = ?)');
-        $stmt->execute([$email]);
-        return $stmt->fetch();
+       $sql = " SELECT 1
+                FROM 
+                    dual
+                WHERE EXISTS 
+                    (SELECT 1 FROM users WHERE email = $email) OR EXISTS 
+                    (SELECT 1 FROM comerciantes WHERE email = ?)";
+        $result = $this->consulta($sql,[$email]);
+        return $result->fetch();
     }
 
     public function procuraEmailExistente($email) {
         
-        $stmt = $this->pdo->prepare('SELECT * FROM comerciantes WHERE email = ?');
-        $stmt->execute([$email]);
-        return $stmt->fetch();
+        $sql = "SELECT * FROM comerciantes WHERE email = ?";
+        $result = $this->consulta($sql,[$email]);
+        return $result->fetch();
     }
 
 
@@ -61,15 +62,26 @@ class Comerciante {
 
         $this->pdo->beginTransaction();
         try {
-            $sql = 'INSERT INTO comerciantes (nome, nome_empresa, site, email, senha, telefone, cpf, status) VALUES (?, ?, ?, ?, ?, ?)';
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$nome, $email, $hashedPassword, $telefone, $cpf, $status]);
-            
+            $sql = "INSERT INTO comerciantes (nome, nome_empresa, site, email, senha, telefone, cpf, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+            $params = [
+                $nome,           // 1. nome
+                $nomeEmpresa,    // 2. nome_empresa
+                $site,           // 3. site
+                $email,          // 4. email
+                $hashedPassword, // 5. senha (use o HASH)
+                $telefone,       // 6. telefone
+                $cpf,            // 7. cpf
+                $status          // 8. status
+            ];
+
+            $result = $this->consulta($sql, $params);
+
             $comercId = $this->pdo->lastInsertId();
             
 
-
-             if ($type === 'comerciantes') {
+            if ($type === 'comerciantes') {
                 $this->assignGroup($comercId, 3);
             } else {
                 error_log('erro');
@@ -86,10 +98,20 @@ class Comerciante {
     }
 
     public function assignGroup($comercId, $groupId) {
+
         // Insere na nova coluna comerc_id
         $sql = 'INSERT INTO acess_grupo (comerc_id, grupo_id) VALUES (?, ?)';
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$comercId, $groupId]);
+        
+        // EXECUTE A CONSULTA (faltava esta linha)
+        // Use try-catch para não quebrar a transação principal se falhar
+        try {
+            $this->consulta($sql, [$comercId, $groupId]);
+            return true;
+        } catch (\PDOException $e) {
+            error_log("Falha ao associar grupo: " . $e->getMessage());
+            // Lança a exceção para que o 'insere' possa fazer o rollBack
+            throw $e; 
+        }
     }
 
     /**
@@ -103,9 +125,9 @@ class Comerciante {
         $dataAtual  = date('Y-m-d');
         $dataExpiracao=date('Y-m-d', strtotime('+1 year', strtotime($dataAtual)) );
         
-        $sql = "UPDATE comerciantes SET plano = ?, plano_expira_em = ? WHERE id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$plano, $dataExpiracao, $comercId]);
+        $sql = "UPDATE comerciantes SET plano = $plano, plano_expira_em = $dataExpiracao WHERE id = $dataAtual";
+        $result = $this->consulta($sql);
+        return $result;
     }
 
     public function ativaPlano($comercId, $plano) {
@@ -113,8 +135,8 @@ class Comerciante {
         $dataExpiracao=date('Y-m-d', strtotime('+1 year', strtotime($dataAtual)) );
         
         $sql = "UPDATE comerciantes SET status = 'ativo', plano = ?, plano_expira_em = ? WHERE id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$plano, $dataExpiracao, $comercId]);
+        $result = $this->consulta($sql);
+        return $result;
     }
 
     /**
@@ -129,9 +151,9 @@ class Comerciante {
                 WHERE a.status = 'ativo'
                 GROUP BY a.id
                 ORDER BY a.criado_em DESC";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll();
+
+        $result = $this->consulta($sql);
+        return $result->fetchAll();
     }
     
     public function getPerfilAtivo($id) {
@@ -141,37 +163,34 @@ class Comerciante {
                         p.titulo_perfil, p.descricao_perfil, p.sobre_mim, p.filtros
                       FROM comerciantes a
                       LEFT JOIN perfil_comerciantes p ON a.id = p.comerc_id
-                      WHERE a.id = ? AND a.status = 'ativo'";
-        $stmtPerfil = $this->pdo->prepare($sqlPerfil);
-        $stmtPerfil->execute([$id]);
-        $perfil = $stmtPerfil->fetch();
+                      WHERE a.id = $id AND a.status = 'ativo'";
+        $result = $this->consulta($sqlPerfil);
+        $perfil = $result->fetch();
 
         if (!$perfil) {
             return false;
         }
 
         // Busca todas as mídias (fotos e vídeos) associadas
-        $sqlMidias = "SELECT id, caminho_arquivo, tipo FROM comerciante_fotos WHERE comerc_id = ?";
-        $stmtMidias = $this->pdo->prepare($sqlMidias);
-        $stmtMidias->execute([$id]);
-        $midias = $stmtMidias->fetchAll();
+        $sqlMidias = "SELECT id, caminho_arquivo, tipo FROM comerciante_fotos WHERE comerc_id = $id";
+        $result = $this->consulta($sqlMidias);
+        $midias = $result->fetchAll();
 
         return ['perfil' => $perfil, 'midias' => $midias];
     }
 
 
      public function getMidias($comercId) {
-        $stmt = $this->pdo->prepare("SELECT id, caminho_arquivo, tipo FROM comerciante_fotos WHERE comerc_id = ?");
-        $stmt->execute([$comercId]);
-        return $stmt->fetchAll();
+        $sql = "SELECT id, caminho_arquivo, tipo FROM comerciante_fotos WHERE comerc_id = $comercId";
+        $result = $this->consulta($sql);
+        return $result->fetchAll();
     }
 
 
 
      public function insereFoto($comercId, $filenome, $tipo = 'galeria') {
-        $sql = "INSERT INTO comerciante_fotos (comerc_id, caminho_arquivo, tipo) VALUES (?, ?, ?)";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$comercId, $filenome, $tipo]);
+        $sql = "INSERT INTO comerciante_fotos (comerc_id, caminho_arquivo, tipo) VALUES ($comercId, $filenome, $tipo)";
+        return $sql;
     }
 
     /**
@@ -184,7 +203,8 @@ class Comerciante {
      */
     public function setProfilePic($comercId, $filenome) {
         // Remove o status 'perfil' da foto antiga, se houver
-        $this->pdo->prepare("UPDATE comerciante_fotos SET tipo = 'galeria' WHERE comerc_id = ? AND tipo = 'perfil'")->execute([$comercId]);
+        $sql = "UPDATE comerciante_fotos SET tipo = 'galeria' WHERE comerc_id = $comercId AND tipo = 'perfil'";
+        $result = $this->consulta($sql);
         
         // Adiciona a nova foto com o tipo 'perfil'
         return $this->insereFoto($comercId, $filenome, 'perfil');
@@ -192,15 +212,18 @@ class Comerciante {
     
 
     public function excluiFoto($midiaId, $comercId) {
+
         // Primeiro, pega o nome do arquivo para deletar do disco
-        $stmt = $this->pdo->prepare("SELECT caminho_arquivo FROM comerciante_fotos WHERE id = ? AND comerc_id = ?");
-        $stmt->execute([$midiaId, $comercId]);
-        $file = $stmt->fetchColumn();
+        $sql = "SELECT caminho_arquivo FROM comerciante_fotos WHERE id = $midiaId AND comerc_id = $comercId";
+        $result = $this->consulta($sql);
+        $file = $result->fetchColumn();
 
         if ($file) {
             // Deleta o registro do banco
-            $deleteStmt = $this->pdo->prepare("DELETE FROM comerciante_fotos WHERE id = ?");
-            if ($deleteStmt->execute([$midiaId])) {
+            $deleteSql = "DELETE FROM comerciante_fotos WHERE id = $midiaId";
+            $resultDelete = $this->consulta($deleteSql);
+            
+            if ($resultDelete) {
                 // Se deletou do banco, deleta o arquivo físico
                 $filePath = __DIR__ . '/../../public/uploads/profiles/' . $file;
                 if (file_exists($filePath)) {

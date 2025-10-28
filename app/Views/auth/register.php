@@ -15,6 +15,31 @@ unset($_SESSION['old_input']);
 ob_start();
 ?>
 
+<script>
+
+    function formatarCampo(campoTexto) {
+
+        if (campoTexto.value.length <= 11) {
+            campoTexto.value = mascaraCpf(campoTexto.value);
+        } else {
+            campoTexto.value = mascaraCnpj(campoTexto.value);
+        }
+    }
+
+    function retirarFormatacao(campoTexto) {
+        campoTexto.value = campoTexto.value.replace(/(\.|\/|\-)/g,"");
+    }
+
+    function mascaraCpf(valor) {
+        return valor.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g,"\$1.\$2.\$3\-\$4");
+    }
+
+    function mascaraCnpj(valor) {
+        return valor.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,"\$1.\$2.\$3\/\$4\-\$5");
+    }
+    
+</script>
+
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
@@ -45,11 +70,11 @@ ob_start();
                     <form action="/register?type=<?= $type ?>" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="name" class="form-label">Nome Completo</label>
-                            <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="Seu Nome" value="<?= htmlspecialchars($old_input['name'] ?? '') ?>" required>
+                            <input type="text" class="form-control form-control-lg" id="nome" name="nome" placeholder="Seu Nome" value="<?= htmlspecialchars($old_input['name'] ?? '') ?>" required>
                         </div>
                          <div class="mb-3">
                             <label for="cpf" class="form-label">CPF</label>
-                            <input type="text" class="form-control form-control-lg" id="cpf" name="cpf" placeholder="000.000.000-00" value="<?= htmlspecialchars($old_input['cpf'] ?? '') ?>" required>
+                            <input type="text" class="form-control form-control-lg" id="cpf" name="cpf" onfocus="javascript: retirarFormatacao(this);" onblur="javascript: formatarCampo(this);" value="<?= htmlspecialchars($old_input['cpf'] ?? '') ?>" required>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
