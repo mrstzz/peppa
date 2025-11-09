@@ -16,14 +16,8 @@ ob_start();
             </li>
             <li class="flex-1" role="presentation">
                 <button class="w-full text-center py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium" 
-                        id="homens-tab" data-tab-target="#homens" type="button" role="tab" aria-selected="false">
-                    Homens (Exemplo)
-                </button>
-            </li>
-            <li class="flex-1" role="presentation">
-                <button class="w-full text-center py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium" 
-                        id="trans-tab" data-tab-target="#trans" type="button" role="tab" aria-selected="false">
-                    Trans (Exemplo)
+                        id="empresa-tab" data-tab-target="#empresa" type="button" role="tab" aria-selected="false">
+                    Empresa (Em breve)
                 </button>
             </li>
         </ul>
@@ -83,8 +77,8 @@ ob_start();
 
         </div>
         
-        <div class_alias="tab-pane" id="homens" role="tabpanel" class="hidden">
-            <p class="text-center p-10 text-gray-500">Conteúdo para Homens em breve.</p>
+        <div class_alias="tab-pane" id="empresa" role="tabpanel" class="hidden">
+            <p class="text-center p-10 text-gray-500">Conteúdo para empresa em breve.</p>
         </div>
         <div class_alias="tab-pane" id="trans" role="tabpanel" class="hidden">
             <p class="text-center p-10 text-gray-500">Conteúdo para Trans em breve.</p>
