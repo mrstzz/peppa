@@ -22,7 +22,6 @@ class CategoriaController extends Controller {
         $dados = [];
         $viewParaRenderizar = '';
 
-        // Lógica para escolher a View e os Dados
         switch ($categoriaNome) {
             
             // --- CASO ESPECÍFICO: SUPERMERCADO ---

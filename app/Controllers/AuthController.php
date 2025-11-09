@@ -35,8 +35,8 @@ class AuthController extends Controller {
             // É um cliente, loga normalmente
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_type'] = 'cliente'; // Guarda o tipo na sessão
-            $_SESSION['user_nome'] = $user['nome'];
-            $_SESSION['user_nome'] = $user['nome'];
+            $_SESSION['user_name'] = $user['nome'];
+            $_SESSION['user_name'] = $user['nome'];
             $this->redirect('/dashboard');
             return;
         }
@@ -53,7 +53,7 @@ class AuthController extends Controller {
 
             $_SESSION['user_id'] = $comerc['id'];
             $_SESSION['user_type'] = 'comerciante'; // Guarda o tipo na sessão
-            $_SESSION['user_nome'] = $comerc['nome'];
+            $_SESSION['user_name'] = $comerc['nome'];
             $_SESSION['user_email'] = $comerc['email'];
             $this->redirect('/dashboard-comerciante'); // Redireciona para um dashboard diferente
             return;

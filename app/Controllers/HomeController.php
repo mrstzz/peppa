@@ -17,7 +17,11 @@ class HomeController extends Controller {
     
     
     public function index() {
-        $this->view('home');
+        $data = [
+            'page_title' => 'Página Inicial', // Exemplo
+            'show_chat' => true // Esta é a linha importante!
+        ];
+        $this->view('home',$data);
     }
 
     public function infoComerciante() {

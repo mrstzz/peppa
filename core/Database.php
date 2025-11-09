@@ -5,14 +5,17 @@
  * Classe para gerenciar a conexão com o banco de dados usando PDO.
  * Garante que apenas uma instância da conexão seja criada (Singleton Pattern).
  */
+
 class Database {
     private static $instance = null;
-    private $conn;
+    private ?int $insert_id = null;
+    protected $conn;
+
 
     /**
      * O construtor é privado para prevenir a criação de novas instâncias
-     * com o operador 'new'.
      */
+
     private function __construct() {
         // Carrega as configurações do banco de dados
         require_once __DIR__ . '/../config/database.php';
@@ -32,10 +35,54 @@ class Database {
         }
     }
 
+
+     /**
+     * Método para executar consultas de forma segura.
+     * 
+     *
+     * @param string $query A query SQL com placeholders (?, ?, etc.)
+     * @param array  $params Um array de parâmetros para o bind.
+     * @param bool   $notdie Se true, retorna um array de erro em vez de 'die()'.
+     * @return PDOStatement|array Retorna o PDOStatement em sucesso, ou um array de erro.
+     */
+
+    public function consulta(string $query, array $params = [], bool $notdie = false)
+    {
+        $this->insert_id = null; 
+        
+        try {
+            $pdo = $this->conn;
+
+            $stmt = $pdo->prepare($query);
+            $stmt->execute($params);
+
+            if (stripos(trim($query), 'INSERT') === 0) {
+                 $this->insert_id = $pdo->lastInsertId();
+            }
+            
+            return $stmt; 
+
+        } catch (PDOException $e) {
+            if ($notdie) {
+                return [
+                    'error_code' => $e->getCode(),
+                    'error_desc' => $e->getMessage()
+                ];
+            }
+            
+            die("<b>Ocorreu um erro ao executar a consulta:</b><br>" . $e->getMessage());
+        }
+    }
+
+
+
+
+
     /**
      * Método estático que controla o acesso à instância.
      * @return PDO A instância da conexão PDO.
      */
+    
     public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new Database();

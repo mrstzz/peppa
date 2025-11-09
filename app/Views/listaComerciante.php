@@ -5,77 +5,130 @@ $title = 'Comerciantes';
 ob_start();
 ?>
 
-<div class="container my-5">
-    <!-- Abas de Categoria -->
-    <ul class="nav nav-tabs nav-fill mb-4" id="categoryTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="comerciantes-tab" data-bs-toggle="tab" data-bs-target="#comerciantes" type="button" role="tab" aria-controls="comerciantes" aria-selected="true">Comerciantes</button>
-        </li>
-    </ul>
+<div class="container mx-auto px-4 my-16 tab-content-container">
+    <div class="border-b border-gray-200 mb-6">
+        <ul class="flex -mb-px" id="categoryTab" role="tablist">
+            <li class="flex-1" role="presentation">
+                <button class="w-full text-center py-4 px-1 border-b-2 border-red-600 text-red-600 font-semibold" 
+                        id="comerciantes-tab" data-tab-target="#comerciantes" type="button" role="tab" aria-selected="true">
+                    Comerciantes
+                </button>
+            </li>
+            <li class="flex-1" role="presentation">
+                <button class="w-full text-center py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium" 
+                        id="homens-tab" data-tab-target="#homens" type="button" role="tab" aria-selected="false">
+                    Homens (Exemplo)
+                </button>
+            </li>
+            <li class="flex-1" role="presentation">
+                <button class="w-full text-center py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium" 
+                        id="trans-tab" data-tab-target="#trans" type="button" role="tab" aria-selected="false">
+                    Trans (Exemplo)
+                </button>
+            </li>
+        </ul>
+    </div>
 
-    <!-- Conteúdo das Abas -->
     <div class="tab-content" id="categoryTabContent">
-        <div class="tab-pane fade show active" id="comerciantes" role="tabpanel" aria-labelledby="comerciantes-tab">
+        <div class_alias="tab-pane" id="comerciantes" role="tabpanel">
             
-            <h2 class="mb-4">Encontre comerciantes em Belo Horizonte, MG</h2>
+            <h2 class="text-2xl font-semibold mb-5 text-gray-800">Encontre comerciantes em Belo Horizonte, MG</h2>
 
-            <!-- Filtros Rápidos -->
-            <div class="d-flex flex-wrap gap-2 mb-4">
-                <button class="btn btn-outline-danger btn-sm">Supermercados</button>
-                <button class="btn btn-outline-danger btn-sm">Drogarias</button>
-                <button class="btn btn-outline-danger btn-sm">Sorveterias</button>
-                <button class="btn btn-outline-danger btn-sm">Restaurantes</button>
-                <button class="btn btn-outline-danger btn-sm">Melhores Avaliados</button>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button class="text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold py-1 px-4 rounded-full transition-colors">Supermercados</button>
+                <button class="text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold py-1 px-4 rounded-full transition-colors">Drogarias</button>
+                <button class="text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold py-1 px-4 rounded-full transition-colors">Sorveterias</button>
+                <button class="text-sm border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold py-1 px-4 rounded-full transition-colors">Restaurantes</button>
+                <button class="text-sm border border-gray-400 text-gray-700 hover:bg-gray-100 font-semibold py-1 px-4 rounded-full transition-colors">Melhores Avaliados</button>
             </div>
 
-            <!-- Ordenar e Filtrar -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="flex justify-between items-center mb-6 border-t border-b border-gray-200 py-3">
                 <div>
-                    <a href="#" class="text-decoration-none text-dark fw-bold">Ordenar por <i class="bi bi-chevron-down"></i></a>
+                    <a href="#" class="font-semibold text-gray-800 hover:text-red-600 transition-colors">
+                        Ordenar por <i class="bi bi-chevron-down text-xs"></i>
+                    </a>
                 </div>
                 <div>
-                    <a href="#" class="text-decoration-none text-dark fw-bold">Filtrar <i class="bi bi-funnel"></i></a>
+                    <a href="#" class="font-semibold text-gray-800 hover:text-red-600 transition-colors">
+                        Filtrar <i class="bi bi-funnel"></i>
+                    </a>
                 </div>
             </div>
 
-            <!-- Grid de Perfis -->
-           <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             <?php if (!empty($comerciantes)): ?>
                 <?php foreach ($comerciantes as $comerciante): ?>
                 <div class="col">
-                    <div class="card h-100 border-0 shadow-sm">
+                    <div class="h-full bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
                         <?php
-                            // Define o caminho da imagem. Usa o placeholder se não houver foto.
                             $imgPath = !empty($comerciante['caminho_arquivo']) 
                                 ? "/uploads/profiles/" . htmlspecialchars($comerciante['caminho_arquivo']) 
                                 : "https://placehold.co/300x400/EFEFEF/333333?text=Sem+Foto";
                         ?>
-                        <img src="<?= $imgPath ?>" class="card-img-top" alt="<?= htmlspecialchars($comerciante['nome']) ?>" style="height: 400px; object-fit: cover;">
-                        <div class="card-body text-center">
-                            <h5 class="card-title"><?= htmlspecialchars($comerciante['nome']) ?></h5>
-                            <p class="card-text text-muted">Bairro, Cidade</p>
-                            <a href="/perfil/<?= htmlspecialchars($comerciante['id'] ?? '') ?>" class="btn btn-outline-primary w-100 mb-2" target="_blank">Ver Perfil</a>
+                        <img src="<?= $imgPath ?>" alt="<?= htmlspecialchars($comerciante['nome']) ?>" class="w-full h-96 object-cover">
+                        <div class="p-4 text-center">
+                            <h5 class="text-lg font-semibold text-gray-800 mb-1"><?= htmlspecialchars($comerciante['nome']) ?></h5>
+                            <p class="text-gray-500 text-sm mb-3">Bairro, Cidade</p>
+                            <a href="/perfil/<?= htmlspecialchars($comerciante['id'] ?? '') ?>" class="w-full block text-center border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold py-2 px-4 rounded-lg transition-colors" target="_blank">Ver Perfil</a>
                         </div>
                     </div>
                 </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="col-12">
-                    <p class="text-center text-muted">Nenhum perfil de comerciante encontrado no momento.</p>
+                <div class="col-span-full">
+                    <p class="text-center text-gray-500 py-10">Nenhum perfil de comerciante encontrado no momento.</p>
                 </div>
             <?php endif; ?>
         </div>
 
         </div>
-        <div class="tab-pane fade" id="homens" role="tabpanel" aria-labelledby="homens-tab">
-            <p class="text-center p-5">Conteúdo para Homens em breve.</p>
+        
+        <div class_alias="tab-pane" id="homens" role="tabpanel" class="hidden">
+            <p class="text-center p-10 text-gray-500">Conteúdo para Homens em breve.</p>
         </div>
-        <div class="tab-pane fade" id="trans" role="tabpanel" aria-labelledby="trans-tab">
-            <p class="text-center p-5">Conteúdo para Trans em breve.</p>
+        <div class_alias="tab-pane" id="trans" role="tabpanel" class="hidden">
+            <p class="text-center p-10 text-gray-500">Conteúdo para Trans em breve.</p>
         </div>
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tabButtons = document.querySelectorAll('.tab-content-container [role="tab"]');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = button.getAttribute('data-tab-target');
+            const targetPanel = document.querySelector(targetId);
+            
+            // Container pai
+            const container = button.closest('.tab-content-container');
+            
+            // Desativa todos os botões
+            container.querySelectorAll('[role="tab"]').forEach(btn => {
+                btn.setAttribute('aria-selected', 'false');
+                btn.classList.remove('text-red-600', 'border-red-600');
+                btn.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'border-transparent');
+            });
+            
+            // Esconde todos os painéis
+            container.querySelectorAll('[role="tabpanel"]').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
+            // Ativa o botão clicado e seu painel
+            button.setAttribute('aria-selected', 'true');
+            button.classList.add('text-red-600', 'border-red-600');
+            button.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'border-transparent');
+            
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+            }
+        });
+    });
+});
+</script>
 
 <?php
 $content = ob_get_clean();
