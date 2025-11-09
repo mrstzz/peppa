@@ -30,10 +30,10 @@ $router->get('logout', 'AuthController@logout');
 $router->post('login', 'AuthController@login');
 $router->post('register', 'AuthController@register');
 
-// Rotas de Dashboard de Cliente
+// Rotas para Dashboard de Cliente
 $router->get('dashboard', 'AuthController@dashboard');
 
-// --- ROTAS PARA Comerciantes ---
+// Rotas para Comerciantes 
 $router->get('dashboard-comerciante', 'ComercianteController@dashboard');
 $router->get('planos', 'ComercianteController@planos');
 $router->post('planos/assinar', 'ComercianteController@assinarPlano');
@@ -45,18 +45,22 @@ $router->post('perfil/salvar', 'ComercianteController@salvarPerfil');
 
 
 
-// --- ROTAS DE PAGAMENTO ---
+// ROTAS DE PAGAMENTO 
 $router->get('checkout', 'ComercianteController@checkout'); // Adicionar este método no ComercianteController
 $router->post('pagamento/pix', 'PagamentoController@gerarPix');
 $router->post('pagamento/cartao', 'PagamentoController@processarCartao');
 $router->get('pagamento/sucesso', 'PagamentoController@sucesso');
 
 
-// --- ROTA DO WEBHOOK ---
+//  ROTA DO WEBHOOK 
 // Esta é a URL que você configurará no painel do Mercado Pago
 $router->post('webhook/mercadopago', 'PagamentoController@handleWebhook');
 
 
-// --- ROTA PARA PERFIL PÚBLICO ---
+// ROTA PARA PERFIL PÚBLICO 
 // O (\d+) captura um ou mais dígitos (o ID) e passa para o controller
 $router->get('perfil/(\d+)', 'HomeController@verPerfil');
+
+
+// Rota para api do chat virtual
+$router->post('api/chat','ChatController@handle');

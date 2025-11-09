@@ -5,197 +5,178 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'mrst' ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title><?= $title ?? 'Peppa' ?></title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f8f9fa;
-        }
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,.04);
-            transition: transform 0.3s ease-in-out;
-        }
-        .navbar-hidden {
-            transform: translateY(-100%);
-        }
-        .navbar-brand {
-            color: #dc3545 !important;
-        }
 
-    
-        .site-footer {
-            background-color: #212529;
-            color: #adb5bd; 
-            padding-top: 4rem;
-            padding-bottom: 2rem;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
         }
-        .site-footer h5 {
-            color: #ffffff; 
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-        .site-footer a {
-            color: #adb5bd;
-            text-decoration: none;
-            transition: color 0.2s ease-in-out;
-        }
-        .site-footer a:hover {
-            color: #ffffff;
-            text-decoration: underline;
-        }
-        .site-footer .list-unstyled li {
-            margin-bottom: 0.75rem;
-        }
-        .site-footer .footer-social-icons a {
-            font-size: 1.5rem;
-            margin-right: 1rem;
-        }
-        .site-footer .footer-bottom {
-            border-top: 1px solid #495057; 
-            padding-top: 1.5rem;
-            margin-top: 2rem;
-        }
-
-    </style>
+    </script>
 </head>
-<body>
+<body class="font-sans bg-gray-100">
     
     <header>
-        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white py-3 fixed-top">
-            <div class="container">
-                <a class="navbar-brand fw-bold fs-4" href="/">
+        <nav id="main-navbar" class="bg-white py-5 fixed w-full shadow-md transition-transform duration-300 ease-in-out z-50">
+            <div class="container mx-auto px-4 flex flex-wrap items-center justify-between">
+                <a class="text-red-600 font-bold text-2xl" href="/">
                     <i class="bi bi-x-diamond-fill"></i>
-                    Peppa   
+                    Peppa
                 </a>
-                <form class="d-flex" role="search" action="comerciantes" method="post">
-                        <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search"/>
-                        <button class="btn btn-outline-success" type="submit">Buscar</button>
+                <form class="hidden md:flex" role="search" action="comerciantes" method="post">
+                    <input class="border border-gray-300 rounded-md py-2 px-5 w-80 mr-2 focus:outline-none focus:ring-2 focus:ring-red-500" type="search" placeholder="Buscar..." aria-label="Search"/>
+                    <button class="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold py-2 px-4 rounded-md transition-colors" type="submit">Buscar</button>
                 </form>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                <button id="navbar-toggler" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100" type="button" aria-label="Toggle navigation">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
-                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav align-items-center">
-                    <?php if (isset($_SESSION['user_name'])){ ?>
-                    <i>Olá,&nbsp;</i> <?= htmlspecialchars($_SESSION['user_name']) ?>! &nbsp;
-                    <?php }?>
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                    <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'comerciante'): ?>
-                        <li class="nav-item">
-                            <a class=" btn btn-outline-secondary" href="/dashboard-comerciante">Dashboard</a>
-                        </li>
-                    <?php elseif (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'cliente'): ?>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="/dashboard">Dashboard</a>
-                        </li>
-                    <?php endif; ?>
-                    <li class="nav-item ms-lg-3">
-                        <a href="/logout" class="btn btn-outline-danger">Sair</a>
-                    </li>
-                    <?php else: ?>
-                    <li class="nav-item dropdown">
-                    <a class="nav-link fw-semibold dropdown-toggle" href="#" id="cadastroDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        CADASTRE-SE GRÁTIS
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
-                        <li><a class="dropdown-item" href="/register?type=usuario">Sou Cliente</a></li>
-                        <li><a class="dropdown-item" href="/register?type=comerciante">Sou Comerciante</a></li>
-                    </ul>
-                    </li>
-                    <li class="nav-item ms-lg-3">
-                        <a class="nav-link fw-semibold" href="/login">LOGIN</a>
-                    </li>
-                    <?php endif; ?>
+                <div class="hidden lg:flex lg:items-center lg:w-auto w-full" id="navbarNav">
+                    <ul class="flex flex-col lg:flex-row lg:items-center lg:space-x-6 pt-4 lg:pt-0 w-full lg:w-auto text-center lg:text-left">
+                        
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <li class="py-2 lg:py-0">
+                                <span class="text-gray-700">Olá, <?= htmlspecialchars($_SESSION['user_name']) ?>!</span>
+                            </li>
+                            <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'comerciante'): ?>
+                                <li class="py-2 lg:py-0">
+                                    <a class="font-semibold text-gray-700 hover:text-red-600" href="/dashboard-comerciante">Dashboard</a>
+                                </li>
+                            <?php elseif (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'cliente'): ?>
+                                <li class="py-2 lg:py-0">
+                                    <a class="font-semibold text-gray-700 hover:text-red-600" href="/dashboard">Dashboard</a>
+                                </li>
+                            <?php endif; ?>
+                            <li class="py-2 lg:py-0 lg:ml-3">
+                                <a href="/logout" class="block border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold py-2 px-4 rounded-md transition-colors">Sair</a>
+                            </li>
+                        
+                        <?php else: ?>
+                            <li class="relative group py-2 lg:py-0">
+                                <a class="font-semibold text-gray-700 hover:text-red-600 cursor-pointer">
+                                    CADASTRE-SE GRÁTIS
+                                    <i class="bi bi-chevron-down text-xs"></i>
+                                </a>
+                                <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 z-10 lg:right-0 border border-gray-100 text-left">
+                                    <li><a class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600" href="/register?type=usuario">Sou Cliente</a></li>
+                                    <li><a class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600" href="/info-comerciante">Sou Comerciante</a></li>
+                                </ul>
+                            </li>
+                            <li class="py-2 lg:py-0 lg:ml-4">
+                                <a class="font-semibold text-gray-700 hover:text-red-600" href="/login">LOGIN</a>
+                            </li>
+
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
 
-    <main style="padding-top: 80px;">
+    <main class="pt-20 min-h-screen"> 
         <?php echo $content; ?>
     </main>
 
-    <footer class="site-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <h5>Para você</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Supermercados</a></li>
-                        <li><a href="#">Drogarias</a></li>
-                        <li><a href="#">Investimentos</a></li>
-                        <li><a href="#">Seguros</a></li>
-                        <li><a href="#">Consórcios</a></li>
+    <footer class="bg-gray-800 text-gray-400 pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <div>
+                    <h5 class="text-white font-semibold mb-6">Para você</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white hover:underline">Supermercados</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Drogarias</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Investimentos</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Seguros</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Consórcios</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <h5>Para sua empresa</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Investimentos</a></li>
-                        <li><a href="#">Meios de Pagamento</a></li>
-                        <li><a href="#">Divulgações</a></li>
-                        <li><a href="#">Outros</a></li>
+                <div>
+                    <h5 class="text-white font-semibold mb-6">Para sua empresa</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white hover:underline">Investimentos</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Meios de Pagamento</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Divulgações</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Outros</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                    <h5>A Peppa</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Institucional</a></li>
-                        <li><a href="#">Central de Relacionamento</a></li>
-                        <li><a href="#">Trabalhe Conosco</a></li>
-                        <li><a href="#">Segurança</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
+                <div>
+                    <h5 class="text-white font-semibold mb-6">A Peppa</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white hover:underline">Institucional</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Central de Relacionamento</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Trabalhe Conosco</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Segurança</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline">Política de Privacidade</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <h5>Contato</h5>
-                    <p class="mb-1"><strong>Telefone:</strong> (XX) XXXX-XXXX</p>
-                    <p><strong>Email:</strong> contato@peppa.com</p>
-                    <div class="footer-social-icons mt-3">
-                        <a href="#"><i class="bi bi-instagram"></i></a>
-                        <a href="#"><i class="bi bi-facebook"></i></a>
-                        <a href="#"><i class="bi bi-linkedin"></i></a>
-                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                <div>
+                    <h5 class="text-white font-semibold mb-6">Contato</h5>
+                    <p class="mb-1"><strong class="text-white">Telefone:</strong> (XX) XXXX-XXXX</p>
+                    <p><strong class="text-white">Email:</strong> contato@peppa.com</p>
+                    <div class="flex space-x-4 mt-3">
+                        <a href="#" class="text-2xl hover:text-white"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-2xl hover:text-white"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-white"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="text-2xl hover:text-white"><i class="bi bi-twitter-x"></i></a>
                     </div>
                 </div>
             </div>
 
-            <div class="footer-bottom text-center">
-                <p class="small mb-0">&copy; <?= date('Y') ?> Peppa. Todos os direitos reservados.</p>
-                <p class="small">CNPJ: XX.XXX.XXX/0001-XX | Rua Fictícia, 123 - Cidade, Estado</p>
+            <div class="border-t border-gray-700 pt-6 mt-8 text-center">
+                <p class="text-sm text-gray-500 mb-0">&copy; <?= date('Y') ?> Peppa. Todos os direitos reservados.</p>
+                <p class="text-sm text-gray-500">CNPJ: XX.XXX.XXX/0001-XX | Rua Fictícia, 123 - Cidade, Estado</p>
             </div>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
+        const toggler = document.getElementById('navbar-toggler');
+        const menu = document.getElementById('navbarNav');
+
+        if (toggler && menu) {
+            toggler.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+        }
+    
         const mainNavbar = document.getElementById('main-navbar');
         let lastScrollTop = 0;
 
         window.addEventListener('scroll', function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             if (scrollTop > lastScrollTop && scrollTop > mainNavbar.offsetHeight) {
-                mainNavbar.classList.add('navbar-hidden');
+                mainNavbar.classList.add('-translate-y-full'); 
             } else {
-                mainNavbar.classList.remove('navbar-hidden');
+                mainNavbar.classList.remove('-translate-y-full'); 
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         });
     </script>
+
+    <?php
+    if (isset($show_chat) && $show_chat === true):
+        include_once __DIR__ . '/../partials/_chat_widget.php';
+    endif;
+    ?>
 </body>
 </html>

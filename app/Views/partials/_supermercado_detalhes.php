@@ -6,67 +6,68 @@
 //
 ?>
 
-<img src="<?= htmlspecialchars($imagemUrl ?? '...') ?>" 
-     class="rounded-top mb-3" 
-     alt="<?= htmlspecialchars($nome ?? '') ?>"
-     width="750"  height="550">
 
-<p class="lead"><?= htmlspecialchars($descricao ?? 'Encontre as melhores ofertas...') ?></p>
+<img src="<?= htmlspecialchars($imagemUrl ?? 'https://placehold.co/600x400/cccccc/999999?text=Imagem') ?>" 
+     class="w-full max-h-64 object-cover rounded-lg mb-4" 
+     alt="<?= htmlspecialchars($nome ?? '') ?>">
 
-<h5 class="mt-4">Principais Seções:</h5>
-<div class="mb-3">
+<p class="text-xl text-gray-600 mb-6"><?= htmlspecialchars($descricao ?? 'Encontre as melhores ofertas...') ?></p>
+
+<h5 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Principais Seções:</h5>
+<div class="flex flex-wrap gap-2 mb-4">
     <?php if (!empty($subcategorias)): ?>
         <?php foreach ($subcategorias as $sub): ?>
             <a href="/buscar?categoria=<?= urlencode($nome) ?>&secao=<?= urlencode($sub) ?>" 
-               class="btn btn-outline-secondary btn-sm mb-1">
+               class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-1 rounded-full transition-colors">
                 <?= htmlspecialchars($sub) ?>
             </a>
         <?php endforeach; ?>
     <?php else: ?>
-        <p class="text-muted small">Nenhuma seção disponível.</p>
+        <p class="text-gray-500 text-sm">Nenhuma seção disponível.</p>
     <?php endif; ?>
 </div>
 
-<h5 class="mt-4">Ofertas em Destaque:</h5>
+<h5 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Ofertas em Destaque:</h5>
 <?php if (!empty($ofertasDestaque)): ?>
-    <div class="row g-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <?php foreach ($ofertasDestaque as $oferta): ?>
-            <div class="col-md-6">
-                <div class="card card-body small h-100">
-                    <strong><?= htmlspecialchars($oferta['produto']) ?></strong>
-                    <p class="mb-1 text-success fw-bold fs-5"><?= htmlspecialchars($oferta['preco']) ?></p>
-                    <span class="text-muted small">
-                        No <?= htmlspecialchars($oferta['comercianteNome']) ?>
-                    </span>
-                </div>
+            <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg h-full">
+                <strong class="text-gray-900"><?= htmlspecialchars($oferta['produto']) ?></strong>
+                <p class="mb-1 text-green-600 font-bold text-xl"><?= htmlspecialchars($oferta['preco']) ?></p>
+                <span class="text-gray-500 text-sm">
+                    No <?= htmlspecialchars($oferta['comercianteNome']) ?>
+                </span>
             </div>
         <?php endforeach; ?>
     </div>
 <?php else: ?>
-    <p class="text-muted small">Nenhuma oferta em destaque esta semana.</p>
+    <p class="text-gray-500 text-sm">Nenhuma oferta em destaque esta semana.</p>
 <?php endif; ?>
 
 
-<h5 class="mt-4">Supermercados em Destaque:</h5>
+<h5 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Supermercados em Destaque:</h5>
 <?php if (!empty($comerciantesDestaque)): ?>
-    <div class="list-group list-group-flush">
+    <div class="divide-y divide-gray-200 border-t border-gray-200">
         <?php foreach ($comerciantesDestaque as $comerciante): ?>
-            <a href="/comerciante/<?= $comerciante['slug'] ?>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-0">
-                <div class="d-flex align-items-center">
-                    <img src="<?= htmlspecialchars($comerciante['logo']) ?>" alt="Logo" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <a href="/comerciante/<?= $comerciante['slug'] ?>" class="flex justify-between items-center py-4 px-2 hover:bg-gray-50 transition-colors">
+                <div class="flex items-center">
+                    <img src="<?= htmlspecialchars($comerciante['logo']) ?>" alt="Logo" class="rounded-md mr-3" style="width: 40px; height: 40px; object-fit: cover;">
                     <div>
-                        <strong class="mb-0"><?= htmlspecialchars($comerciante['nome']) ?></strong>
-                        <div class="small text-muted"><?= htmlspecialchars($comerciante['bairro']) ?></div>
+                        <strong class="text-gray-900"><?= htmlspecialchars($comerciante['nome']) ?></strong>
+                        <div class="text-sm text-gray-500"><?= htmlspecialchars($comerciante['bairro']) ?></div>
                     </div>
                 </div>
-                <span class="badge bg-primary rounded-pill">Ver Perfil</span>
+                <span class="bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full">
+                    Ver Perfil
+                </span>
             </a>
         <?php endforeach; ?>
     </div>
 <?php else: ?>
-    <p class="text-muted small">Nenhum comerciante em destaque no momento.</p>
+    <p class="text-gray-500 text-sm">Nenhum comerciante em destaque no momento.</p>
 <?php endif; ?>
 
-<a href="/buscar?categoria=<?= urlencode($nome) ?>" class="btn btn-primary w-100 mt-4">
+<a href="/buscar?categoria=<?= urlencode($nome) ?>" 
+   class="block w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-5 rounded-lg text-center mt-6 transition-colors">
     Ver todos os Supermercados
 </a>
